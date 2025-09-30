@@ -3,13 +3,12 @@ import { SYMPTOM_GROUPS } from './constants';
 import { AnalysisResult } from './types';
 import { analyzeSymptomsWithGemini } from './services/geminiService';
 import ResultSection from './components/ResultSection';
-import { Leaf, ScrollText, Heart, Shield, Droplet, Package, Camera, Loader2, Search } from './components/Icons';
+import { Leaf, ScrollText, Heart, Shield, Droplet, Package, Camera, Loader2 } from './components/Icons';
 
 const App: React.FC = () => {
     const [checkedSymptoms, setCheckedSymptoms] = useState<Record<string, boolean>>({});
     const [freeTextSymptoms, setFreeTextSymptoms] = useState('');
     const [tongueImage, setTongueImage] = useState<string | null>(null);
-    const [editedTongueImage, setEditedTongueImage] = useState<string | null>(null);
     const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -55,12 +54,10 @@ const App: React.FC = () => {
         setLoading(true);
         setError('');
         setAnalysisResult(null);
-        setEditedTongueImage(null);
 
         try {
-            const { analysis, editedImage } = await analyzeSymptomsWithGemini(selectedSymptomsList, freeTextSymptoms, tongueImage);
-            setAnalysisResult(analysis.results);
-            setEditedTongueImage(editedImage);
+            const fullResponse = await analyzeSymptomsWithGemini(selectedSymptomsList, freeTextSymptoms, tongueImage);
+            setAnalysisResult(fullResponse.results);
         } catch (e) {
             if (e instanceof Error) {
                 setError(e.message);
@@ -186,37 +183,6 @@ const App: React.FC = () => {
                         Icon={Leaf}
                         colorClass="text-yellow-400"
                     />
-
-                    {(editedTongueImage || analysisResult.phanTichLuoi) && (
-                        <div className="p-4 bg-gray-800 rounded-xl shadow-lg mb-4 border border-yellow-700/50 transition-all duration-300 hover:shadow-yellow-500/20">
-                            <div className="flex items-center mb-3 text-cyan-400">
-                                <Search className="w-5 h-5 mr-3" />
-                                <h3 className="text-lg font-semibold text-yellow-500 uppercase">Phân tích lưỡi</h3>
-                            </div>
-                            
-                            {editedTongueImage && (
-                                <img 
-                                    src={editedTongueImage} 
-                                    alt="Ảnh lưỡi đã được phân tích và chú thích" 
-                                    className="w-full object-contain rounded border border-gray-600 mb-4" 
-                                />
-                            )}
-
-                            {analysisResult.phanTichLuoi && (
-                                <div className="text-base text-gray-300 leading-relaxed whitespace-pre-line">
-                                    {analysisResult.phanTichLuoi.split('\n').map((line, index) => {
-                                        let renderedLine = line;
-                                        if (renderedLine.trim().startsWith('-')) {
-                                            renderedLine = '<span class="mr-2 text-red-400">•</span> ' + renderedLine.trim().substring(1).trim();
-                                        }
-                                        renderedLine = renderedLine.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-yellow-300">$1</strong>');
-                                        renderedLine = renderedLine.replace(/(→\s*)(.*)/g, '<span class="text-yellow-500 mx-2">→</span><span class="text-yellow-300">$2</span>');
-                                        return <p key={index} dangerouslySetInnerHTML={{ __html: renderedLine }} className="mb-1 last:mb-0" />;
-                                    })}
-                                </div>
-                            )}
-                        </div>
-                    )}
 
                     <ResultSection
                         title="Hướng hỗ trợ"

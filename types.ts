@@ -12,6 +12,7 @@ export interface SymptomGroup {
 export interface AnalysisResult {
     trieuChung: string[];
     ketLuan: string;
+    phanTichLuoi?: string;
     huongHoTro: string;
     goiYSanPham: string;
     cachDung: string;

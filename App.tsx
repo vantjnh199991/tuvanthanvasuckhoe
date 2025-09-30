@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useCallback } from 'react';
 import { SYMPTOM_GROUPS } from './constants';
 import { AnalysisResult } from './types';
@@ -75,7 +74,7 @@ const App: React.FC = () => {
             <header className="text-center mb-8">
                 <Leaf className="w-10 h-10 mx-auto text-red-500 mb-2" />
                 <h1 className="text-3xl font-bold text-yellow-400">THẬN VÀ SỨC KHOẺ</h1>
-                <p className="text-sm text-gray-400 mt-1 max-w-2xl mx-auto">Chọn các triệu chứng ứng với sức khoẻ của bạn (Lưu ý: các triệu chứng hiện tại đang mắc phải, các triệu chứng lâu lâu mới bị một lần thì không tính vào).</p>
+                <p className="text-base text-gray-400 mt-1 max-w-2xl mx-auto">Chọn các triệu chứng ứng với sức khoẻ của bạn (Lưu ý: các triệu chứng hiện tại đang mắc phải, các triệu chứng lâu lâu mới bị một lần thì không tính vào).</p>
             </header>
 
             <div className="max-w-xl mx-auto mb-10 bg-gray-800 p-4 sm:p-6 rounded-xl shadow-xl">
@@ -91,7 +90,7 @@ const App: React.FC = () => {
                             </div>
                             <div className="space-y-2">
                                 {group.symptoms.map((symptom, index) => (
-                                    <label key={index} className="flex items-start text-sm cursor-pointer hover:text-yellow-400 transition-colors">
+                                    <label key={index} className="flex items-start text-base cursor-pointer hover:text-yellow-400 transition-colors">
                                         <input
                                             type="checkbox"
                                             checked={checkedSymptoms[`${group.id}|${symptom}`] || false}
@@ -108,12 +107,13 @@ const App: React.FC = () => {
 
                 <div className="mt-6 pt-4 border-t border-red-800">
                     <h3 className="font-bold text-red-400 mb-2">Các triệu chứng khác (Tự nhập)</h3>
+                    <p className="text-sm text-gray-400 mb-2">Vui lòng nhập bằng tiếng Việt có dấu để kết quả phân tích được chính xác nhất.</p>
                     <textarea
                         value={freeTextSymptoms}
                         onChange={(e) => setFreeTextSymptoms(e.target.value)}
-                        placeholder="Ví dụ: 'gần sáng phải dậy tiểu 1 lần', 'bụng lạnh thì đi ngoài', 'tóc rụng'..."
+                        placeholder="Ví dụ: 'đau lưng', 'mất ngủ', 'tóc rụng'..."
                         rows={3}
-                        className="w-full p-3 text-sm bg-gray-900 border border-gray-700 rounded-lg text-gray-200 focus:ring-yellow-500 focus:border-yellow-500"
+                        className="w-full p-3 text-base bg-gray-900 border border-gray-700 rounded-lg text-gray-200 focus:ring-yellow-500 focus:border-yellow-500"
                     />
                     
                     <h3 className="font-bold text-red-400 mb-2 mt-4 flex items-center">
@@ -123,7 +123,7 @@ const App: React.FC = () => {
                         type="file"
                         accept="image/*"
                         onChange={handleImageUpload}
-                        className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-red-700 hover:file:bg-yellow-100 cursor-pointer"
+                        className="w-full text-base text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-red-700 hover:file:bg-yellow-100 cursor-pointer"
                     />
 
                     {tongueImage && (
@@ -152,9 +152,15 @@ const App: React.FC = () => {
                         'XEM KẾT QUẢ PHÂN TÍCH'
                     )}
                 </button>
+                
+                {loading && (
+                    <p className="text-center text-yellow-400 mt-4 animate-pulse text-base">
+                        Vui lòng chờ, hệ thống phân tích kỹ nên sẽ hơi lâu. Xin cảm ơn!
+                    </p>
+                )}
 
                 {error && (
-                    <div className="mt-4 p-3 bg-red-900/50 border border-red-700 text-red-300 rounded-lg text-sm">
+                    <div className="mt-4 p-3 bg-red-900/50 border border-red-700 text-red-300 rounded-lg text-base">
                         ⚠️ {error}
                     </div>
                 )}
@@ -213,7 +219,7 @@ const App: React.FC = () => {
                     <p className="text-lg font-bold text-red-400 mb-3">
                         🛍️ ĐẶT MUA SẢN PHẨM PHÙ HỢP
                     </p>
-                    <p className="text-sm text-gray-300 mb-4">
+                    <p className="text-base text-gray-300 mb-4">
                         Xem ngay trang trưng bày của <strong>Thận & Sức Khoẻ</strong> trên TikTok và chọn sản phẩm phù hợp với bạn:
                     </p>
                     <a 

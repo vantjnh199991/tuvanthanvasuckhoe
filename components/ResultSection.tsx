@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 interface ResultSectionProps {
@@ -15,7 +14,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ title, content, Icon, col
                 <Icon className="w-5 h-5 mr-3" />
                 <h3 className="text-lg font-semibold text-yellow-500 uppercase">{title}</h3>
             </div>
-            <div className="text-sm text-gray-300 leading-relaxed whitespace-pre-line">
+            <div className="text-base text-gray-300 leading-relaxed whitespace-pre-line">
                 {content.split('\n').map((line, index) => {
                     let renderedLine = line;
                     
@@ -25,7 +24,8 @@ const ResultSection: React.FC<ResultSectionProps> = ({ title, content, Icon, col
                     
                     renderedLine = renderedLine.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-yellow-300">$1</strong>');
                     
-                    renderedLine = renderedLine.replace(/→/g, '<span class="text-yellow-500 mx-2">→</span>');
+                    // Color the arrow and the text that follows it
+                    renderedLine = renderedLine.replace(/(→\s*)(.*)/g, '<span class="text-yellow-500 mx-2">→</span><span class="text-yellow-300">$2</span>');
 
                     return <p key={index} dangerouslySetInnerHTML={{ __html: renderedLine }} className="mb-1 last:mb-0" />;
                 })}

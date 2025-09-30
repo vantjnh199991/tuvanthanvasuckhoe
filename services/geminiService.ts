@@ -108,7 +108,10 @@ export async function analyzeSymptomsWithGemini(
     } catch (e) {
         console.error("AI Analysis Error:", e);
         if (e instanceof Error) {
-            throw new Error(`Lỗi kết nối hoặc phân tích: ${e.message}. Vui lòng thử lại.`);
+            if (e.message.includes('"code":429') || e.message.includes('RESOURCE_EXHAUSTED')) {
+                throw new Error('Lượt sử dụng API miễn phí đã hết. Vui lòng kiểm tra lại gói dịch vụ và thông tin thanh toán tài khoản Google AI của bạn để tiếp tục sử dụng.');
+            }
+            throw new Error(`Lỗi phân tích từ AI: ${e.message}. Vui lòng thử lại.`);
         }
         throw new Error('Đã xảy ra lỗi không xác định trong quá trình phân tích.');
     }

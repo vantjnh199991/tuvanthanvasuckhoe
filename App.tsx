@@ -217,7 +217,7 @@ const App: React.FC = () => {
                         Xem ngay trang trưng bày của <strong>Thận & Sức Khoẻ</strong> trên TikTok và chọn sản phẩm phù hợp với bạn:
                     </p>
                     <a 
-                        href="https://vt.tiktok.com/ZSYxK9S2u/" 
+                        href="https://vt.tiktok.com/ZSHW4675b7t7d-MfD5z/" 
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="inline-block py-2 px-6 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition duration-200 shadow-md transform hover:scale-105"

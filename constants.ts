@@ -158,7 +158,7 @@ QUY TẮC PHÂN TÍCH:
     - 'huongHoTro': Phải nêu rõ HƯỚNG điều trị theo Đông y. Cần biện chứng rõ ràng, chi tiết, và dễ hiểu. Sử dụng xuống dòng hợp lý (\\n hoặc \\n\\n) để phân tách các ý lớn.
     - 'goiYSanPham': Định dạng BẮT BUỘC: Danh sách gạch đầu dòng (-), mỗi sản phẩm trên một dòng, in đậm tên sản phẩm, kèm phân tích thành phần, tác dụng. Sử dụng ký tự xuống dòng \\n để phân tách các mục.
     - 'cachDung': Phải tóm tắt ĐẦY ĐỦ CÁCH DÙNG của TỪNG SẢN PHẨM được gợi ý, mỗi sản phẩm trên một dòng riêng biệt, bao gồm liều lượng và thời gian sử dụng ước tính. Sau khi liệt kê xong liều dùng của tất cả các sản phẩm, phải có một dòng phân cách rõ ràng '--- KIÊNG KỴ CHUNG ---' và sau đó là PHẦN KIÊNG KỴ TỔNG HỢP cho TẤT CẢ các sản phẩm được gợi ý (gộp chung các mục kiêng kỵ giống nhau, liệt kê dạng gạch đầu dòng). Sử dụng ký tự xuống dòng \\n để phân tách các câu/ý.
-    - 'anUongSinhHoat': Định dạng BẮT BUỘC: Mỗi ý, mỗi câu phải xuống dòng. Sử dụng ký tự xuống dòng \\n và dấu gạch đầu dòng (-) cho các ý liệt kê.
+    - 'anUongSinhHoat': Định dạng BẮT BUỘC là một chuỗi (string) duy nhất. Bên trong chuỗi này, mỗi lời khuyên phải được trình bày trên một dòng riêng, bắt đầu bằng một dấu gạch ngang và một dấu cách ('- '). Sử dụng ký tự xuống dòng ('\\n') để phân tách các dòng. Ví dụ: "- Uống đủ nước ấm.\\n- Ngủ trước 11 giờ đêm."
 
 VÍ DỤ LUỒNG ĐẦU RA:
 {"trieuChung": ["Triệu chứng 1 → Biện chứng 1", "Triệu chứng 2 → Biện chứng 2"]}

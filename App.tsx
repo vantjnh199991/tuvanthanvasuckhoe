@@ -95,62 +95,110 @@ const App: React.FC = () => {
             return;
         }
 
-        setAnalysisResult({}); // Start with an empty object for progressive population
-        try {
-            const stream = await analyzeSymptomsStream(selectedSymptomsList, freeTextSymptoms, tongueImage);
-            
-            let buffer = '';
+        setAnalysisResult({});
+        
+        const MAX_RETRIES = 5;
+        let lastError: Error | null = null;
+
+        for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
             let finalResultForCache: Partial<AnalysisResult> = {};
+             if (attempt > 1) {
+                // Reset UI for retry
+                setAnalysisResult({});
+            }
 
-            for await (const chunk of stream) {
-                buffer += chunk.text;
-                let lastNewline = buffer.lastIndexOf('\n');
+            try {
+                const stream = await analyzeSymptomsStream(selectedSymptomsList, freeTextSymptoms, tongueImage);
                 
-                if (lastNewline !== -1) {
-                    const linesToProcess = buffer.substring(0, lastNewline);
-                    buffer = buffer.substring(lastNewline + 1);
+                let buffer = '';
 
-                    linesToProcess.split('\n').forEach(line => {
-                        const cleanLine = cleanJsonString(line);
-                        if (cleanLine) {
-                            try {
-                                const parsed = JSON.parse(cleanLine);
-                                finalResultForCache = { ...finalResultForCache, ...parsed };
-                                setAnalysisResult(prev => ({ ...prev, ...parsed }));
-                            } catch (e) {
-                                console.warn("Failed to parse JSON line:", `"${line}"`, e);
+                for await (const chunk of stream) {
+                    buffer += chunk.text;
+                    let lastNewline = buffer.lastIndexOf('\n');
+                    
+                    if (lastNewline !== -1) {
+                        const linesToProcess = buffer.substring(0, lastNewline);
+                        buffer = buffer.substring(lastNewline + 1);
+
+                        linesToProcess.split('\n').forEach(line => {
+                            const cleanLine = cleanJsonString(line);
+                            if (cleanLine) {
+                                try {
+                                    const parsed = JSON.parse(cleanLine);
+                                    finalResultForCache = { ...finalResultForCache, ...parsed };
+                                    setAnalysisResult(prev => ({ ...prev, ...parsed }));
+                                } catch (e) {
+                                    console.warn("Failed to parse JSON line:", `"${line}"`, e);
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
+                }
+                
+                const finalCleanLine = cleanJsonString(buffer);
+                if (finalCleanLine) {
+                    try {
+                        const parsed = JSON.parse(finalCleanLine);
+                        finalResultForCache = { ...finalResultForCache, ...parsed };
+                        setAnalysisResult(prev => ({ ...prev, ...parsed }));
+                    } catch (e) {
+                        console.warn("Failed to parse final buffer content:", `"${buffer}"`, e);
+                    }
+                }
+
+                // Validate if the result is complete
+                const requiredKeys = ['trieuChung', 'ketLuan', 'huongHoTro', 'goiYSanPham', 'cachDung', 'anUongSinhHoat'];
+                if (tongueImage) {
+                    requiredKeys.push('phanTichLuoi');
+                }
+                const missingKeys = requiredKeys.filter(key => !(key in finalResultForCache));
+                if (missingKeys.length > 0) {
+                    throw new Error(`INCOMPLETE_ANALYSIS: Missing keys: ${missingKeys.join(', ')}`);
+                }
+
+                setCache(prevCache => ({
+                    ...prevCache,
+                    [cacheKey]: finalResultForCache as AnalysisResult
+                }));
+                
+                setError(''); 
+                lastError = null;
+                break; 
+
+            } catch (e) {
+                 if (e instanceof Error) {
+                    lastError = e;
+                    const isOverloadedError = e.message.includes('503') || e.message.toLowerCase().includes('model is overloaded');
+                    const isIncompleteAnalysisError = e.message.startsWith('INCOMPLETE_ANALYSIS');
+
+                    if ((isOverloadedError || isIncompleteAnalysisError) && attempt < MAX_RETRIES) {
+                        const retryMessage = isOverloadedError 
+                            ? `Máy chủ AI đang quá tải. Đang thử lại...`
+                            : `Kết quả phân tích chưa hoàn chỉnh. Đang thử lại...`;
+                        
+                        console.warn(`Attempt ${attempt} failed: ${e.message}. Retrying...`);
+                        setError(`${retryMessage} (${attempt}/${MAX_RETRIES})`);
+                        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+                    } else {
+                        break; 
+                    }
+                } else {
+                    lastError = new Error('An unknown error occurred during analysis.');
+                    break;
                 }
             }
-            
-            const finalCleanLine = cleanJsonString(buffer);
-            if (finalCleanLine) {
-                try {
-                    const parsed = JSON.parse(finalCleanLine);
-                    finalResultForCache = { ...finalResultForCache, ...parsed };
-                    setAnalysisResult(prev => ({ ...prev, ...parsed }));
-                } catch (e) {
-                    console.warn("Failed to parse final buffer content:", `"${buffer}"`, e);
-                }
-            }
-
-            setCache(prevCache => ({
-                ...prevCache,
-                [cacheKey]: finalResultForCache as AnalysisResult
-            }));
-
-        } catch (e) {
-            if (e instanceof Error) {
-                setError(e.message);
-            } else {
-                setError('An unknown error occurred during analysis.');
-            }
-            setAnalysisResult(null);
-        } finally {
-            setLoading(false);
         }
+        
+        if (lastError) {
+             if (lastError.message.startsWith('INCOMPLETE_ANALYSIS')) {
+                 setError('Không thể hoàn tất phân tích sau nhiều lần thử. Vui lòng thử lại sau hoặc điều chỉnh lại các triệu chứng.');
+             } else {
+                setError(lastError.message);
+             }
+             setAnalysisResult(null);
+        }
+
+        setLoading(false);
     };
 
     return (

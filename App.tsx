@@ -1,17 +1,36 @@
+
 import React, { useState, useMemo, useCallback } from 'react';
 import { SYMPTOM_GROUPS } from './constants';
 import { AnalysisResult } from './types';
-import { analyzeSymptomsWithGemini } from './services/geminiService';
+import { analyzeSymptomsStream } from './services/geminiService';
 import ResultSection from './components/ResultSection';
-import { Leaf, ScrollText, Heart, Shield, Droplet, Package, Camera, Loader2 } from './components/Icons';
+import { Leaf, ScrollText, Heart, Shield, Droplet, Package, Camera, Loader2, Search } from './components/Icons';
+
+const generateCacheKey = (symptoms: string[], freeText: string, image: string | null): string => {
+    const imagePart = image ? image.substring(0, 100) : 'no-image';
+    return `${symptoms.sort().join('|')}|${freeText.trim()}|${imagePart}`;
+};
+
+const cleanJsonString = (rawString: string): string => {
+    let clean = rawString.trim();
+    if (clean.startsWith('```json')) {
+        clean = clean.substring(7);
+    }
+    if (clean.endsWith('```')) {
+        clean = clean.substring(0, clean.length - 3);
+    }
+    return clean.trim();
+}
+
 
 const App: React.FC = () => {
     const [checkedSymptoms, setCheckedSymptoms] = useState<Record<string, boolean>>({});
     const [freeTextSymptoms, setFreeTextSymptoms] = useState('');
     const [tongueImage, setTongueImage] = useState<string | null>(null);
-    const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
+    const [analysisResult, setAnalysisResult] = useState<Partial<AnalysisResult> | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [cache, setCache] = useState<Record<string, AnalysisResult>>({});
 
     const handleCheckboxChange = useCallback((groupId: string, symptom: string) => {
         const key = `${groupId}|${symptom}`;
@@ -39,11 +58,24 @@ const App: React.FC = () => {
     
     const selectedSymptomsList = useMemo(() => {
         return Object.keys(checkedSymptoms).filter(key => checkedSymptoms[key]).map(key => {
-            const [groupId, symptom] = key.split('|');
-            const groupTitle = SYMPTOM_GROUPS.find(g => g.id === groupId)?.title || 'Khác';
-            return `${symptom} (${groupTitle})`;
+            const [, symptom] = key.split('|');
+            return symptom;
         });
     }, [checkedSymptoms]);
+
+    const trieuChungContent = useMemo(() => {
+        if (!analysisResult?.trieuChung) return undefined;
+        
+        const symptoms = analysisResult.trieuChung;
+        if (Array.isArray(symptoms)) {
+            return symptoms.filter(s => typeof s === 'string').join('\n');
+        }
+        if (typeof symptoms === 'string') {
+            return symptoms;
+        }
+        console.warn("Malformed 'trieuChung' data received:", symptoms);
+        return undefined;
+    }, [analysisResult]);
 
     const handleAnalyze = async () => {
         if (selectedSymptomsList.length === 0 && freeTextSymptoms.trim() === '' && !tongueImage) {
@@ -54,16 +86,68 @@ const App: React.FC = () => {
         setLoading(true);
         setError('');
         setAnalysisResult(null);
+        
+        const cacheKey = generateCacheKey(selectedSymptomsList, freeTextSymptoms, tongueImage);
 
+        if (cache[cacheKey]) {
+            setAnalysisResult(cache[cacheKey]);
+            setLoading(false);
+            return;
+        }
+
+        setAnalysisResult({}); // Start with an empty object for progressive population
         try {
-            const fullResponse = await analyzeSymptomsWithGemini(selectedSymptomsList, freeTextSymptoms, tongueImage);
-            setAnalysisResult(fullResponse.results);
+            const stream = await analyzeSymptomsStream(selectedSymptomsList, freeTextSymptoms, tongueImage);
+            
+            let buffer = '';
+            let finalResultForCache: Partial<AnalysisResult> = {};
+
+            for await (const chunk of stream) {
+                buffer += chunk.text;
+                let lastNewline = buffer.lastIndexOf('\n');
+                
+                if (lastNewline !== -1) {
+                    const linesToProcess = buffer.substring(0, lastNewline);
+                    buffer = buffer.substring(lastNewline + 1);
+
+                    linesToProcess.split('\n').forEach(line => {
+                        const cleanLine = cleanJsonString(line);
+                        if (cleanLine) {
+                            try {
+                                const parsed = JSON.parse(cleanLine);
+                                finalResultForCache = { ...finalResultForCache, ...parsed };
+                                setAnalysisResult(prev => ({ ...prev, ...parsed }));
+                            } catch (e) {
+                                console.warn("Failed to parse JSON line:", `"${line}"`, e);
+                            }
+                        }
+                    });
+                }
+            }
+            
+            const finalCleanLine = cleanJsonString(buffer);
+            if (finalCleanLine) {
+                try {
+                    const parsed = JSON.parse(finalCleanLine);
+                    finalResultForCache = { ...finalResultForCache, ...parsed };
+                    setAnalysisResult(prev => ({ ...prev, ...parsed }));
+                } catch (e) {
+                    console.warn("Failed to parse final buffer content:", `"${buffer}"`, e);
+                }
+            }
+
+            setCache(prevCache => ({
+                ...prevCache,
+                [cacheKey]: finalResultForCache as AnalysisResult
+            }));
+
         } catch (e) {
             if (e instanceof Error) {
                 setError(e.message);
             } else {
                 setError('An unknown error occurred during analysis.');
             }
+            setAnalysisResult(null);
         } finally {
             setLoading(false);
         }
@@ -89,17 +173,20 @@ const App: React.FC = () => {
                                 <h3 className="font-bold text-base">{group.title}</h3>
                             </div>
                             <div className="space-y-2">
-                                {group.symptoms.map((symptom, index) => (
-                                    <label key={index} className="flex items-start text-base cursor-pointer hover:text-yellow-400 transition-colors">
-                                        <input
-                                            type="checkbox"
-                                            checked={checkedSymptoms[`${group.id}|${symptom}`] || false}
-                                            onChange={() => handleCheckboxChange(group.id, symptom)}
-                                            className="mt-1 w-4 h-4 text-red-500 bg-gray-900 border-gray-600 rounded focus:ring-red-500 focus:ring-2"
-                                        />
-                                        <span className="ml-2 text-gray-300">{symptom}</span>
-                                    </label>
-                                ))}
+                                {group.symptoms.map((fullSymptom, index) => {
+                                    const symptomText = fullSymptom.split('→')[0].trim();
+                                    return (
+                                        <label key={index} className="flex items-start text-base cursor-pointer hover:text-yellow-400 transition-colors">
+                                            <input
+                                                type="checkbox"
+                                                checked={checkedSymptoms[`${group.id}|${fullSymptom}`] || false}
+                                                onChange={() => handleCheckboxChange(group.id, fullSymptom)}
+                                                className="mt-1 w-4 h-4 text-red-500 bg-gray-900 border-gray-600 rounded focus:ring-red-500 focus:ring-2"
+                                            />
+                                            <span className="ml-2 text-gray-300">{symptomText}</span>
+                                        </label>
+                                    );
+                                })}
                             </div>
                         </div>
                     );
@@ -153,12 +240,6 @@ const App: React.FC = () => {
                     )}
                 </button>
                 
-                {loading && (
-                    <p className="text-center text-yellow-400 mt-4 animate-pulse text-base">
-                        Vui lòng chờ, hệ thống phân tích kỹ nên sẽ hơi lâu. Xin cảm ơn!
-                    </p>
-                )}
-
                 {error && (
                     <div className="mt-4 p-3 bg-red-900/50 border border-red-700 text-red-300 rounded-lg text-base">
                         ⚠️ {error}
@@ -170,51 +251,17 @@ const App: React.FC = () => {
                 <div className="max-w-xl mx-auto mt-10 p-4 sm:p-6 bg-gray-950 rounded-2xl shadow-2xl border-2 border-yellow-700">
                     <h2 className="text-2xl font-bold mb-6 text-yellow-400 text-center border-b-2 border-red-600 pb-3">2. KẾT QUẢ ĐÔNG Y BIỆN CHỨNG</h2>
                     
-                    <ResultSection
-                        title="Triệu chứng"
-                        content={analysisResult.trieuChung.join('\n')}
-                        Icon={ScrollText}
-                        colorClass="text-red-400"
-                    />
-                    
-                    <ResultSection
-                        title="Kết luận"
-                        content={analysisResult.ketLuan}
-                        Icon={Leaf}
-                        colorClass="text-yellow-400"
-                    />
-
-                    <ResultSection
-                        title="Hướng hỗ trợ"
-                        content={analysisResult.huongHoTro}
-                        Icon={Heart}
-                        colorClass="text-pink-400"
-                    />
-                    
-                    <ResultSection
-                        title="Gợi ý sản phẩm"
-                        content={analysisResult.goiYSanPham}
-                        Icon={Package}
-                        colorClass="text-orange-300"
-                    />
-
-                    <ResultSection
-                        title="Cách dùng"
-                        content={analysisResult.cachDung}
-                        Icon={Shield}
-                        colorClass="text-blue-400"
-                    />
-
-                    <ResultSection
-                        title="Ăn uống – Sinh hoạt"
-                        content={analysisResult.anUongSinhHoat}
-                        Icon={Droplet}
-                        colorClass="text-green-400"
-                    />
+                    <ResultSection title="Triệu chứng" content={trieuChungContent} Icon={ScrollText} colorClass="text-red-400" />
+                    <ResultSection title="Kết luận" content={analysisResult.ketLuan} Icon={Leaf} colorClass="text-yellow-400" />
+                    {tongueImage && <ResultSection title="Phân tích lưỡi" content={analysisResult.phanTichLuoi} Icon={Search} colorClass="text-cyan-400" />}
+                    <ResultSection title="Hướng hỗ trợ" content={analysisResult.huongHoTro} Icon={Heart} colorClass="text-pink-400" />
+                    <ResultSection title="Gợi ý sản phẩm" content={analysisResult.goiYSanPham} Icon={Package} colorClass="text-orange-300" />
+                    <ResultSection title="Cách dùng" content={analysisResult.cachDung} Icon={Shield} colorClass="text-blue-400" />
+                    <ResultSection title="Ăn uống – Sinh hoạt" content={analysisResult.anUongSinhHoat} Icon={Droplet} colorClass="text-green-400" />
                 </div>
             )}
 
-            {analysisResult && (
+            {analysisResult && analysisResult.goiYSanPham && (
                 <div className="max-w-xl mx-auto mt-8 p-4 bg-red-800/20 border border-red-700 rounded-xl text-center shadow-inner">
                     <p className="text-lg font-bold text-red-400 mb-3">
                         🛍️ ĐẶT MUA SẢN PHẨM PHÙ HỢP

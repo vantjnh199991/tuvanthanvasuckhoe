@@ -1,4 +1,3 @@
-
 import { FC, SVGProps } from 'react';
 
 export interface SymptomGroup {
@@ -10,12 +9,13 @@ export interface SymptomGroup {
 }
 
 export interface AnalysisResult {
-    trieuChung: string[];
-    ketLuan: string;
-    huongHoTro: string;
-    goiYSanPham: string;
-    cachDung: string;
-    anUongSinhHoat: string;
+    trieuChung?: string[];
+    ketLuan?: string;
+    phanTichLuoi?: string;
+    huongHoTro?: string;
+    goiYSanPham?: string;
+    cachDung?: string;
+    anUongSinhHoat?: string;
 }
 
 export interface FullAnalysisResponse {

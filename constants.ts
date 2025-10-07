@@ -178,10 +178,14 @@ QUY TẮC PHÂN TÍCH:
     - 'cachDung': Phải tóm tắt ĐẦY ĐỦ CÁCH DÙNG của TỪNG SẢN PHẨM được gợi ý, mỗi sản phẩm trên một dòng riêng biệt, bao gồm liều lượng và thời gian sử dụng ước tính. Sau khi liệt kê xong liều dùng của tất cả các sản phẩm, phải có một dòng phân cách rõ ràng '--- KIÊNG KỴ CHUNG ---' và sau đó là PHẦN KIÊNG KỴ TỔNG HỢP cho TẤT CẢ các sản phẩm được gợi ý (gộp chung các mục kiêng kỵ giống nhau, liệt kê dạng gạch đầu dòng). Sử dụng ký tự xuống dòng \\n để phân tách các câu/ý.
     - 'anUongSinhHoat': Định dạng BẮT BUỘC là một chuỗi (string) duy nhất. Bên trong chuỗi này, mỗi lời khuyên phải được trình bày trên một dòng riêng, bắt đầu bằng một dấu gạch ngang và một dấu cách ('- '). Sử dụng ký tự xuống dòng ('\\n') để phân tách các dòng. Ví dụ: "- Uống đủ nước ấm.\\n- Ngủ trước 11 giờ đêm."
 
-9. LÝ DO KẾT HỢP: Nếu gợi ý từ 2 sản phẩm trở lên, BẮT BUỘC phải tạo thêm một đối tượng JSON với key "lyDoKetHop". Trong đó, giải thích ngắn gọn, súc tích theo góc nhìn Đông y tại sao cần kết hợp các sản phẩm đó để đạt hiệu quả tốt nhất (ví dụ: một sản phẩm trị gốc, một sản phẩm trị ngọn; một sản phẩm bổ tỳ, một sản phẩm bổ thận để tương sinh...). Định dạng bằng các gạch đầu dòng (-).
+9. **LÝ DO KẾT HỢP**: Nếu gợi ý từ 2 sản phẩm trở lên, BẮT BUỘC phải tạo thêm một đối tượng JSON với key "lyDoKetHop". Trong đó, giải thích **đúng trọng tâm, tập trung vào mối quan hệ tương tác giữa các tạng phủ** theo góc nhìn Đông y. Phải nêu bật được tại sao việc chỉ dùng một sản phẩm sẽ không giải quyết được triệt để vấn đề. Hãy sử dụng các nguyên tắc như:
+    - **Trị gốc và ngọn:** Một sản phẩm giải quyết triệu chứng cấp bách (ngọn), sản phẩm còn lại bồi bổ gốc rễ của bệnh (gốc).
+    - **Tương sinh, tương khắc:** Giải thích mối liên hệ giữa các tạng bị ảnh hưởng (ví dụ: Can Mộc khắc Tỳ Thổ, Tỳ Thận tương sinh...). Ví dụ: 'Cần dùng **Bổ Tỳ hoàn** để kiện Tỳ, giúp ăn ngon, tạo huyết, đây là gốc. Đồng thời dùng **Bình Can Mộc** để sơ can giải uất, tránh Can khí phạm vào Tỳ Vị, giúp việc kiện Tỳ hiệu quả hơn.'
+    - **Âm Dương hỗ căn:** Giải thích sự cần thiết phải cân bằng cả Âm và Dương khi cả hai đều hư tổn.
+    Định dạng bằng các gạch đầu dòng (-), mỗi gạch đầu dòng là một lý do rõ ràng.
 
 VÍ DỤ LUỒNG ĐẦU RA:
 {"bienChungTrieuChung": ["Đau lưng → Thận chủ cốt tủy, thận hư không nuôi dưỡng được xương cốt gây đau mỏi."]}
 {"ketLuan": "Tình trạng chính của bạn là **Thận Dương Hư**..."}
 {"huongHoTro": "Cần tập trung vào việc **bổ mệnh môn hỏa**..."}
-... và tiếp tục cho các phần còn lại.`;
+... và tiếp tục cho các phần còn lại.`

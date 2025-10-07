@@ -168,7 +168,7 @@ const App: React.FC = () => {
             } catch (e) {
                  if (e instanceof Error) {
                     lastError = e;
-                    const isOverloadedError = e.message.includes('503') || e.message.toLowerCase().includes('model is overloaded');
+                    const isOverloadedError = e.message === 'MODEL_OVERLOADED';
                     const isIncompleteAnalysisError = e.message.startsWith('INCOMPLETE_ANALYSIS');
 
                     if ((isOverloadedError || isIncompleteAnalysisError) && attempt < MAX_RETRIES) {
@@ -192,6 +192,8 @@ const App: React.FC = () => {
         if (lastError) {
              if (lastError.message.startsWith('INCOMPLETE_ANALYSIS')) {
                  setError('Không thể hoàn tất phân tích sau nhiều lần thử. Vui lòng thử lại sau hoặc điều chỉnh lại các triệu chứng.');
+             } else if (lastError.message === 'MODEL_OVERLOADED') {
+                 setError('Máy chủ AI hiện đang quá tải. Sau 5 lần thử vẫn không thành công, vui lòng thử lại sau ít phút.');
              } else {
                 setError(lastError.message);
              }

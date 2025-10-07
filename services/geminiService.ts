@@ -54,11 +54,24 @@ export async function analyzeSymptomsStream(
     } catch (e) {
         console.error("AI Analysis Error:", e);
         if (e instanceof Error) {
-            if (e.message.includes('"code":429') || e.message.includes('RESOURCE_EXHAUSTED')) {
+            const errorMessage = e.message.toLowerCase();
+
+            // Check for 503: Model overloaded. This is a temporary issue.
+            if (errorMessage.includes('"code":503') || errorMessage.includes('unavailable') || errorMessage.includes('model is overloaded')) {
+                // This specific string will be caught by the UI to trigger retries.
+                throw new Error('MODEL_OVERLOADED');
+            }
+            
+            // Check for 429: Rate limiting / quota exhausted. This is a user account issue.
+            if (errorMessage.includes('"code":429') || errorMessage.includes('resource_exhausted')) {
                 throw new Error('Lượt sử dụng API miễn phí đã hết. Vui lòng kiểm tra lại gói dịch vụ và thông tin thanh toán tài khoản Google AI của bạn để tiếp tục sử dụng.');
             }
-            throw new Error(`Lỗi phân tích từ AI: ${e.message}. Vui lòng thử lại.`);
+
+            // For any other specific API error, we now return a user-friendly message
+            // instead of the raw JSON error. This is the key fix for the user's issue.
+            throw new Error('Đã xảy ra lỗi trong quá trình phân tích từ AI. Vui lòng thử lại.');
         }
-        throw new Error('Đã xảy ra lỗi không xác định trong quá trình phân tích.');
+        // For non-Error exceptions or unknown errors
+        throw new Error('Đã xảy ra lỗi không xác định. Vui lòng thử lại.');
     }
 }

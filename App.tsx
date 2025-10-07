@@ -1,4 +1,5 @@
 
+
 import React, { useState, useMemo, useCallback } from 'react';
 import { SYMPTOM_GROUPS } from './constants';
 import { AnalysisResult } from './types';
@@ -87,6 +88,9 @@ const App: React.FC = () => {
         setLoading(true);
         setError('');
         setAnalysisResult(null);
+
+        // Add a 10-second delay before starting the analysis
+        await new Promise(resolve => setTimeout(resolve, 10000));
 
         const localSymptoms = [...selectedSymptomsList];
         

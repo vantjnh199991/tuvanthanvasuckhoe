@@ -4,7 +4,7 @@ import { SYMPTOM_GROUPS } from './constants';
 import { AnalysisResult } from './types';
 import { analyzeSymptomsStream } from './services/geminiService';
 import ResultSection from './components/ResultSection';
-import { Leaf, ScrollText, Heart, Shield, Droplet, Package, Camera, Loader2, Search } from './components/Icons';
+import { Leaf, ScrollText, Heart, Shield, Droplet, Package, Camera, Loader2, Search, Zap } from './components/Icons';
 
 const generateCacheKey = (symptoms: string[], freeText: string, image: string | null): string => {
     const imagePart = image ? image.substring(0, 100) : 'no-image';
@@ -63,19 +63,20 @@ const App: React.FC = () => {
         });
     }, [checkedSymptoms]);
 
-    const trieuChungContent = useMemo(() => {
-        if (!analysisResult?.trieuChung) return undefined;
-        
-        const symptoms = analysisResult.trieuChung;
-        if (Array.isArray(symptoms)) {
-            return symptoms.filter(s => typeof s === 'string').join('\n');
+    const selectedSymptomsContent = useMemo(() => {
+        if (analysisResult?.trieuChung && Array.isArray(analysisResult.trieuChung) && analysisResult.trieuChung.length > 0) {
+            return analysisResult.trieuChung.map(s => `- ${s}`).join('\n');
         }
-        if (typeof symptoms === 'string') {
-            return symptoms;
-        }
-        console.warn("Malformed 'trieuChung' data received:", symptoms);
         return undefined;
-    }, [analysisResult]);
+    }, [analysisResult?.trieuChung]);
+
+    const freeTextSymptomsContent = useMemo(() => {
+        if (analysisResult?.bienChungTrieuChung && Array.isArray(analysisResult.bienChungTrieuChung) && analysisResult.bienChungTrieuChung.length > 0) {
+            return analysisResult.bienChungTrieuChung.map(s => `- ${s}`).join('\n');
+        }
+        return undefined;
+    }, [analysisResult?.bienChungTrieuChung]);
+
 
     const handleAnalyze = async () => {
         if (selectedSymptomsList.length === 0 && freeTextSymptoms.trim() === '' && !tongueImage) {
@@ -86,16 +87,21 @@ const App: React.FC = () => {
         setLoading(true);
         setError('');
         setAnalysisResult(null);
+
+        const localSymptoms = [...selectedSymptomsList];
         
         const cacheKey = generateCacheKey(selectedSymptomsList, freeTextSymptoms, tongueImage);
 
         if (cache[cacheKey]) {
-            setAnalysisResult(cache[cacheKey]);
+            setAnalysisResult({
+                trieuChung: localSymptoms,
+                ...cache[cacheKey]
+            });
             setLoading(false);
             return;
         }
 
-        setAnalysisResult({});
+        setAnalysisResult({ trieuChung: localSymptoms });
         
         const MAX_RETRIES = 5;
         let lastError: Error | null = null;
@@ -103,8 +109,7 @@ const App: React.FC = () => {
         for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
             let finalResultForCache: Partial<AnalysisResult> = {};
              if (attempt > 1) {
-                // Reset UI for retry
-                setAnalysisResult({});
+                setAnalysisResult({ trieuChung: localSymptoms });
             }
 
             try {
@@ -146,11 +151,20 @@ const App: React.FC = () => {
                     }
                 }
 
-                // Validate if the result is complete
-                const requiredKeys = ['trieuChung', 'ketLuan', 'huongHoTro', 'goiYSanPham', 'cachDung', 'anUongSinhHoat'];
+                const requiredKeys = ['ketLuan', 'huongHoTro', 'goiYSanPham', 'cachDung', 'anUongSinhHoat'];
+                if (freeTextSymptoms.trim()) {
+                    requiredKeys.push('bienChungTrieuChung');
+                }
                 if (tongueImage) {
                     requiredKeys.push('phanTichLuoi');
                 }
+                 if (finalResultForCache.goiYSanPham) {
+                    const productCount = (finalResultForCache.goiYSanPham.match(/\*\*(.*?)\*\*/g) || []).length;
+                    if (productCount >= 2) {
+                        requiredKeys.push('lyDoKetHop');
+                    }
+                }
+
                 const missingKeys = requiredKeys.filter(key => !(key in finalResultForCache));
                 if (missingKeys.length > 0) {
                     throw new Error(`INCOMPLETE_ANALYSIS: Missing keys: ${missingKeys.join(', ')}`);
@@ -207,12 +221,12 @@ const App: React.FC = () => {
         <div className="min-h-screen bg-gray-900 text-gray-100 font-sans p-4 sm:p-6 md:p-8">
             <header className="text-center mb-8">
                 <Leaf className="w-10 h-10 mx-auto text-red-500 mb-2" />
-                <h1 className="text-3xl font-bold text-yellow-400">THẬN VÀ SỨC KHOẺ</h1>
-                <p className="text-base text-gray-400 mt-1 max-w-2xl mx-auto">Chọn các triệu chứng ứng với sức khoẻ của bạn (Lưu ý: các triệu chứng hiện tại đang mắc phải, các triệu chứng lâu lâu mới bị một lần thì không tính vào).</p>
+                <h1 className="text-4xl font-bold text-yellow-400">THẬN VÀ SỨC KHOẺ</h1>
+                <p className="text-lg text-gray-400 mt-1 max-w-2xl mx-auto">Chọn các triệu chứng ứng với sức khoẻ của bạn (Lưu ý: các triệu chứng hiện tại đang mắc phải, các triệu chứng lâu lâu mới bị một lần thì không tính vào).</p>
             </header>
 
             <div className="max-w-xl mx-auto mb-10 bg-gray-800 p-4 sm:p-6 rounded-xl shadow-xl">
-                <h2 className="text-xl font-semibold mb-4 text-red-400 border-b border-red-800 pb-2">1. Checklist Triệu Chứng</h2>
+                <h2 className="text-2xl font-semibold mb-4 text-red-400 border-b border-red-800 pb-2">1. Checklist Triệu Chứng</h2>
                 
                 {SYMPTOM_GROUPS.map(group => {
                     const Icon = group.icon;
@@ -220,13 +234,13 @@ const App: React.FC = () => {
                         <div key={group.id} className="mb-6 p-3 border border-gray-700 rounded-lg bg-gray-700/50">
                             <div className={`flex items-center mb-3 ${group.color}`}>
                                 <Icon className="w-4 h-4 mr-2" />
-                                <h3 className="font-bold text-base">{group.title}</h3>
+                                <h3 className="font-bold text-lg">{group.title}</h3>
                             </div>
                             <div className="space-y-2">
                                 {group.symptoms.map((fullSymptom, index) => {
                                     const symptomText = fullSymptom.split('→')[0].trim();
                                     return (
-                                        <label key={index} className="flex items-start text-base cursor-pointer hover:text-yellow-400 transition-colors">
+                                        <label key={index} className="flex items-start text-lg cursor-pointer hover:text-yellow-400 transition-colors">
                                             <input
                                                 type="checkbox"
                                                 checked={checkedSymptoms[`${group.id}|${fullSymptom}`] || false}
@@ -244,13 +258,13 @@ const App: React.FC = () => {
 
                 <div className="mt-6 pt-4 border-t border-red-800">
                     <h3 className="font-bold text-red-400 mb-2">Các triệu chứng khác (Tự nhập)</h3>
-                    <p className="text-sm text-gray-400 mb-2">Vui lòng nhập bằng tiếng Việt có dấu để kết quả phân tích được chính xác nhất.</p>
+                    <p className="text-base text-gray-400 mb-2">Vui lòng nhập bằng tiếng Việt có dấu để kết quả phân tích được chính xác nhất.</p>
                     <textarea
                         value={freeTextSymptoms}
                         onChange={(e) => setFreeTextSymptoms(e.target.value)}
                         placeholder="Ví dụ: 'đau lưng', 'mất ngủ', 'tóc rụng'..."
                         rows={3}
-                        className="w-full p-3 text-base bg-gray-900 border border-gray-700 rounded-lg text-gray-200 focus:ring-yellow-500 focus:border-yellow-500"
+                        className="w-full p-3 text-lg bg-gray-900 border border-gray-700 rounded-lg text-gray-200 focus:ring-yellow-500 focus:border-yellow-500"
                     />
                     
                     <h3 className="font-bold text-red-400 mb-2 mt-4 flex items-center">
@@ -260,12 +274,12 @@ const App: React.FC = () => {
                         type="file"
                         accept="image/*"
                         onChange={handleImageUpload}
-                        className="w-full text-base text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-red-700 hover:file:bg-yellow-100 cursor-pointer"
+                        className="w-full text-lg text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-red-700 hover:file:bg-yellow-100 cursor-pointer"
                     />
 
                     {tongueImage && (
                         <div className="mt-3 p-3 bg-gray-700/70 rounded-lg">
-                            <p className="text-xs text-yellow-400 mb-2">Ảnh lưỡi đã tải lên:</p>
+                            <p className="text-sm text-yellow-400 mb-2">Ảnh lưỡi đã tải lên:</p>
                             <img 
                                 src={tongueImage} 
                                 alt="Ảnh lưỡi" 
@@ -291,21 +305,26 @@ const App: React.FC = () => {
                 </button>
                 
                 {error && (
-                    <div className="mt-4 p-3 bg-red-900/50 border border-red-700 text-red-300 rounded-lg text-base">
+                    <div className="mt-4 p-3 bg-red-900/50 border border-red-700 text-red-300 rounded-lg text-lg">
                         ⚠️ {error}
                     </div>
                 )}
             </div>
             
-            {analysisResult && (
+            {analysisResult && (analysisResult.ketLuan || loading) && (
                 <div className="max-w-xl mx-auto mt-10 p-4 sm:p-6 bg-gray-950 rounded-2xl shadow-2xl border-2 border-yellow-700">
-                    <h2 className="text-2xl font-bold mb-6 text-yellow-400 text-center border-b-2 border-red-600 pb-3">2. KẾT QUẢ ĐÔNG Y BIỆN CHỨNG</h2>
+                    <h2 className="text-3xl font-bold mb-6 text-yellow-400 text-center border-b-2 border-red-600 pb-3">2. KẾT QUẢ ĐÔNG Y BIỆN CHỨNG</h2>
                     
-                    <ResultSection title="Triệu chứng" content={trieuChungContent} Icon={ScrollText} colorClass="text-red-400" />
+                    {selectedSymptomsContent && <ResultSection title="Triệu chứng đã chọn" content={selectedSymptomsContent} Icon={ScrollText} colorClass="text-red-400" />}
+                    {freeTextSymptomsContent && <ResultSection title="Triệu chứng nhập thêm (Biện chứng)" content={freeTextSymptomsContent} Icon={Search} colorClass="text-teal-400" />}
+
                     <ResultSection title="Kết luận" content={analysisResult.ketLuan} Icon={Leaf} colorClass="text-yellow-400" />
                     {tongueImage && <ResultSection title="Phân tích lưỡi" content={analysisResult.phanTichLuoi} Icon={Search} colorClass="text-cyan-400" />}
                     <ResultSection title="Hướng hỗ trợ" content={analysisResult.huongHoTro} Icon={Heart} colorClass="text-pink-400" />
                     <ResultSection title="Gợi ý sản phẩm" content={analysisResult.goiYSanPham} Icon={Package} colorClass="text-orange-300" />
+                    {analysisResult.lyDoKetHop && (
+                        <ResultSection title="Tại sao phải kết hợp?" content={analysisResult.lyDoKetHop} Icon={Zap} colorClass="text-purple-400" />
+                    )}
                     <ResultSection title="Cách dùng" content={analysisResult.cachDung} Icon={Shield} colorClass="text-blue-400" />
                     <ResultSection title="Ăn uống – Sinh hoạt" content={analysisResult.anUongSinhHoat} Icon={Droplet} colorClass="text-green-400" />
                 </div>
@@ -313,10 +332,10 @@ const App: React.FC = () => {
 
             {analysisResult && analysisResult.goiYSanPham && (
                 <div className="max-w-xl mx-auto mt-8 p-4 bg-red-800/20 border border-red-700 rounded-xl text-center shadow-inner">
-                    <p className="text-lg font-bold text-red-400 mb-3">
+                    <p className="text-xl font-bold text-red-400 mb-3">
                         🛍️ ĐẶT MUA SẢN PHẨM PHÙ HỢP
                     </p>
-                    <p className="text-base text-gray-300 mb-4">
+                    <p className="text-lg text-gray-300 mb-4">
                         Xem ngay trang trưng bày của <strong>Thận & Sức Khoẻ</strong> trên TikTok và chọn sản phẩm phù hợp với bạn:
                     </p>
                     <a 
@@ -330,7 +349,7 @@ const App: React.FC = () => {
                 </div>
             )}
 
-            <footer className="text-center text-xs text-gray-600 mt-10 max-w-xl mx-auto">
+            <footer className="text-center text-sm text-gray-600 mt-10 max-w-xl mx-auto">
                 <p>Nếu không thấy mua được qua tiktok thì mọi người có thể đặt hàng qua Zalo: 
                     <a href="https://zalo.me/0392938357" target="_blank" rel="noopener noreferrer" className="text-yellow-400 ml-1 hover:underline">
                         0392938357

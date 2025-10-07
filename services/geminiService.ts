@@ -67,6 +67,11 @@ export async function analyzeSymptomsStream(
                 throw new Error('Lượt sử dụng API miễn phí đã hết. Vui lòng kiểm tra lại gói dịch vụ và thông tin thanh toán tài khoản Google AI của bạn để tiếp tục sử dụng.');
             }
 
+            // Check for 403: Permission denied. This is an API key issue.
+            if (errorMessage.includes('"code":403') || errorMessage.includes('permission_denied')) {
+                throw new Error('Lỗi xác thực (403): Không có quyền truy cập dịch vụ AI. Vui lòng kiểm tra lại API key đã được cấu hình đúng và có đủ quyền hạn để sử dụng mô hình này.');
+            }
+
             // For any other specific API error, we now return a user-friendly message
             // instead of the raw JSON error. This is the key fix for the user's issue.
             throw new Error('Đã xảy ra lỗi trong quá trình phân tích từ AI. Vui lòng thử lại.');

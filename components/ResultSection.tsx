@@ -13,9 +13,9 @@ const ResultSection: React.FC<ResultSectionProps> = ({ title, content, Icon, col
         <div className="p-4 bg-gray-800 rounded-xl shadow-lg mb-4 border border-yellow-700/50 transition-all duration-300 hover:shadow-yellow-500/20 animate-fade-in-up">
             <div className={`flex items-center mb-3 ${colorClass}`}>
                 <Icon className="w-5 h-5 mr-3" />
-                <h3 className="text-lg font-semibold text-yellow-500 uppercase">{title}</h3>
+                <h3 className="text-xl font-semibold text-yellow-500 uppercase">{title}</h3>
             </div>
-            <div className="text-base text-gray-300 leading-relaxed whitespace-pre-line">
+            <div className="text-lg text-gray-300 leading-relaxed whitespace-pre-line">
                 {content ? (
                     content.split('\n').map((line, index) => {
                         let renderedLine = line;

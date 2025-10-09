@@ -149,7 +149,12 @@ QUY TẮC PHÂN TÍCH:
 5. Nhóm thứ 2 và thứ 3, nếu có ≥2 triệu chứng, được xem là PHỐI HỢP.
 6. Nếu có từ 3 nhóm trở lên cùng yếu (có triệu chứng) thì gọi là HƯ TỔNG HỢP, trong đó phải ghi rõ các nhóm yếu.
 
-*LƯU Ý ĐẶC BIỆT VỀ LƯỠI:* Nếu có cung cấp HÌNH ẢNH LƯỠI, hãy thực hiện phân tích chi tiết vào đối tượng JSON có key "phanTichLuoi". Mô tả rõ Sắc lưỡi, Rêu lưỡi, Hình thái và đưa ra biện chứng liên quan. Thông tin này sẽ được dùng để củng cố cho phần KẾT LUẬN tổng thể.
+*LƯU Ý ĐẶC BIỆT VỀ LƯỠI:* Nếu có cung cấp HÌNH ẢNH LƯỠI, bạn PHẢI thực hiện một phân tích **CỰC KỲ CHI TIẾT VÀ SÂU SẮC** vào đối tượng JSON có key "phanTichLuoi". Phân tích phải bao gồm đầy đủ các yếu tố sau và phải đối chiếu chặt chẽ với các triệu chứng đã có:
+- **Sắc lưỡi (Màu sắc):** Mô tả chi tiết màu sắc (nhợt, đỏ, đỏ sẫm, tím, xanh...) và ý nghĩa lâm sàng của nó (hàn, nhiệt, huyết ứ, khí trệ...). Phân tích cả vùng đầu lưỡi, rìa lưỡi và gốc lưỡi.
+- **Hình thái (Hình dáng):** Mô tả hình dáng tổng thể của lưỡi (bệu và to, thon và nhỏ, ngắn, dài...), có vết hằn răng hay không, và ý nghĩa của các dấu hiệu này (Tỳ khí hư, thấp trệ, âm hư...).
+- **Rêu lưỡi:** Phân tích kỹ về độ dày (mỏng, dày), màu sắc (trắng, vàng, xám, đen), độ ẩm (khô, trơn ướt, nhớt) và sự phân bố của rêu (dày ở đâu, mỏng ở đâu). Giải thích ý nghĩa của từng đặc điểm (chính khí, tà khí, vị trí bệnh...). 
+- **Đặc điểm khác:** Tìm và phân tích các điểm bất thường như các điểm đỏ (nốt gai), vết nứt, loét, các đường tĩnh mạch dưới lưỡi... và ý nghĩa theo vị trí tạng phủ trên lưỡi.
+- **ĐỐI CHIẾU VÀ TỔNG HỢP:** Đây là phần quan trọng nhất. Bạn phải **kết nối và đối chiếu** một cách logic những gì quan sát được trên lưỡi với các triệu chứng mà người dùng đã cung cấp. Ví dụ: "Lưỡi có vết hằn răng rõ rệt cho thấy Tỳ khí hư, thấp trệ. Điều này hoàn toàn khớp với triệu chứng 'Dễ mệt, làm ít đã đuối' và 'Bụng mềm, hay ậm ạch' của người dùng, củng cố chẩn đoán Tỳ Khí Hư là tình trạng chính."
 
 7. Dựa trên phân tích, hãy sử dụng các sản phẩm sau để gợi ý (chỉ dùng các sản phẩm này, gợi ý tối đa 3 sản phẩm):
     A. Viên bổ thận âm (Thành phần: Thục địa, hoài sơn, sơn thủ, phục linh, hà thủ ô, trạch tà, đan bì, đảng sâm) - Hỗ trợ Thận Âm hư, tóc, xương khớp, kinh nguyệt, mồ hôi trộm, nóng trong. Liều dùng: Ngày 3 lần, 30 viên/lần sau ăn. Một lọ dùng trong khoảng 1 tháng. Kiêng: Không ăn rau muống, giá đỗ, đậu xanh.

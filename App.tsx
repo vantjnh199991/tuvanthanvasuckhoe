@@ -1,5 +1,6 @@
 
 
+
 import React, { useState, useMemo, useCallback } from 'react';
 import { SYMPTOM_GROUPS } from './constants';
 import { AnalysisResult } from './types';
@@ -87,6 +88,9 @@ const App: React.FC = () => {
 
         setLoading(true);
         setError('');
+
+        // Artificial 30-second delay
+        await new Promise(resolve => setTimeout(resolve, 30000));
 
         const localSymptoms = [...selectedSymptomsList];
         const cacheKey = generateCacheKey(selectedSymptomsList, freeTextSymptoms, tongueImage);
@@ -211,6 +215,9 @@ const App: React.FC = () => {
 
         setLoading(false);
     };
+    
+    const canShowPostTongueAnalysis = !tongueImage || (tongueImage && analysisResult?.phanTichLuoi);
+
 
     return (
         <div className="min-h-screen bg-gray-900 text-gray-100 font-sans p-4 sm:p-6 md:p-8">
@@ -298,6 +305,12 @@ const App: React.FC = () => {
                         'XEM KẾT QUẢ PHÂN TÍCH'
                     )}
                 </button>
+
+                {loading && (
+                    <div className="mt-4 text-center text-red-400 animate-blink font-semibold">
+                        Vui lòng đợi 1 - 2 phút, quá trình phân tích chi tiết nên sẽ hơi lâu. Xin cảm ơn!
+                    </div>
+                )}
                 
                 {error && (
                     <div className="mt-4 p-3 bg-red-900/50 border border-red-700 text-red-300 rounded-lg text-lg">
@@ -315,13 +328,18 @@ const App: React.FC = () => {
 
                     <ResultSection title="Kết luận" content={analysisResult.ketLuan} Icon={Leaf} colorClass="text-yellow-400" />
                     {tongueImage && <ResultSection title="Phân tích lưỡi" content={analysisResult.phanTichLuoi} Icon={Search} colorClass="text-cyan-400" />}
-                    <ResultSection title="Hướng hỗ trợ" content={analysisResult.huongHoTro} Icon={Heart} colorClass="text-pink-400" />
-                    <ResultSection title="Gợi ý sản phẩm" content={analysisResult.goiYSanPham} Icon={Package} colorClass="text-orange-300" />
-                    {analysisResult.lyDoKetHop && (
-                        <ResultSection title="Tại sao phải kết hợp?" content={analysisResult.lyDoKetHop} Icon={Zap} colorClass="text-purple-400" />
+                    
+                    {canShowPostTongueAnalysis && (
+                        <>
+                            <ResultSection title="Hướng hỗ trợ" content={analysisResult.huongHoTro} Icon={Heart} colorClass="text-pink-400" />
+                            <ResultSection title="Gợi ý sản phẩm" content={analysisResult.goiYSanPham} Icon={Package} colorClass="text-orange-300" />
+                            {analysisResult.lyDoKetHop && (
+                                <ResultSection title="Tại sao phải kết hợp?" content={analysisResult.lyDoKetHop} Icon={Zap} colorClass="text-purple-400" />
+                            )}
+                            <ResultSection title="Cách dùng" content={analysisResult.cachDung} Icon={Shield} colorClass="text-blue-400" />
+                            <ResultSection title="Ăn uống – Sinh hoạt" content={analysisResult.anUongSinhHoat} Icon={Droplet} colorClass="text-green-400" />
+                        </>
                     )}
-                    <ResultSection title="Cách dùng" content={analysisResult.cachDung} Icon={Shield} colorClass="text-blue-400" />
-                    <ResultSection title="Ăn uống – Sinh hoạt" content={analysisResult.anUongSinhHoat} Icon={Droplet} colorClass="text-green-400" />
                 </div>
             )}
 

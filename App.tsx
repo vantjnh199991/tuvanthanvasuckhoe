@@ -87,13 +87,8 @@ const App: React.FC = () => {
 
         setLoading(true);
         setError('');
-        setAnalysisResult(null);
-
-        // Add a 10-second delay before starting the analysis
-        await new Promise(resolve => setTimeout(resolve, 10000));
 
         const localSymptoms = [...selectedSymptomsList];
-        
         const cacheKey = generateCacheKey(selectedSymptomsList, freeTextSymptoms, tongueImage);
 
         if (cache[cacheKey]) {
@@ -105,17 +100,14 @@ const App: React.FC = () => {
             return;
         }
 
-        setAnalysisResult({ trieuChung: localSymptoms });
-        
+        // Initialize with base data. This object will be built upon across retries.
+        let cumulativeResult: Partial<AnalysisResult> = { trieuChung: localSymptoms };
+        setAnalysisResult(cumulativeResult);
+
         const MAX_RETRIES = 5;
         let lastError: Error | null = null;
 
         for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
-            let finalResultForCache: Partial<AnalysisResult> = {};
-             if (attempt > 1) {
-                setAnalysisResult({ trieuChung: localSymptoms });
-            }
-
             try {
                 const stream = await analyzeSymptomsStream(selectedSymptomsList, freeTextSymptoms, tongueImage);
                 
@@ -134,7 +126,7 @@ const App: React.FC = () => {
                             if (cleanLine) {
                                 try {
                                     const parsed = JSON.parse(cleanLine);
-                                    finalResultForCache = { ...finalResultForCache, ...parsed };
+                                    cumulativeResult = { ...cumulativeResult, ...parsed };
                                     setAnalysisResult(prev => ({ ...prev, ...parsed }));
                                 } catch (e) {
                                     console.warn("Failed to parse JSON line:", `"${line}"`, e);
@@ -148,7 +140,7 @@ const App: React.FC = () => {
                 if (finalCleanLine) {
                     try {
                         const parsed = JSON.parse(finalCleanLine);
-                        finalResultForCache = { ...finalResultForCache, ...parsed };
+                        cumulativeResult = { ...cumulativeResult, ...parsed };
                         setAnalysisResult(prev => ({ ...prev, ...parsed }));
                     } catch (e) {
                         console.warn("Failed to parse final buffer content:", `"${buffer}"`, e);
@@ -156,32 +148,29 @@ const App: React.FC = () => {
                 }
 
                 const requiredKeys = ['ketLuan', 'huongHoTro', 'goiYSanPham', 'cachDung', 'anUongSinhHoat'];
-                if (freeTextSymptoms.trim()) {
-                    requiredKeys.push('bienChungTrieuChung');
-                }
-                if (tongueImage) {
-                    requiredKeys.push('phanTichLuoi');
-                }
-                 if (finalResultForCache.goiYSanPham) {
-                    const productCount = (finalResultForCache.goiYSanPham.match(/\*\*(.*?)\*\*/g) || []).length;
+                if (freeTextSymptoms.trim()) requiredKeys.push('bienChungTrieuChung');
+                if (tongueImage) requiredKeys.push('phanTichLuoi');
+                
+                if (cumulativeResult.goiYSanPham) {
+                    const productCount = (cumulativeResult.goiYSanPham.match(/\*\*(.*?)\*\*/g) || []).length;
                     if (productCount >= 2) {
                         requiredKeys.push('lyDoKetHop');
                     }
                 }
 
-                const missingKeys = requiredKeys.filter(key => !(key in finalResultForCache));
+                const missingKeys = requiredKeys.filter(key => !(key in cumulativeResult));
                 if (missingKeys.length > 0) {
                     throw new Error(`INCOMPLETE_ANALYSIS: Missing keys: ${missingKeys.join(', ')}`);
                 }
 
                 setCache(prevCache => ({
                     ...prevCache,
-                    [cacheKey]: finalResultForCache as AnalysisResult
+                    [cacheKey]: cumulativeResult as AnalysisResult
                 }));
                 
                 setError(''); 
                 lastError = null;
-                break; 
+                break; // Success, exit loop
 
             } catch (e) {
                  if (e instanceof Error) {
@@ -197,8 +186,9 @@ const App: React.FC = () => {
                         console.warn(`Attempt ${attempt} failed: ${e.message}. Retrying...`);
                         setError(`${retryMessage} (${attempt}/${MAX_RETRIES})`);
                         await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+                        // Continue to next iteration
                     } else {
-                        break; 
+                        break; // Exit loop for non-retryable errors or max retries
                     }
                 } else {
                     lastError = new Error('An unknown error occurred during analysis.');
@@ -209,13 +199,14 @@ const App: React.FC = () => {
         
         if (lastError) {
              if (lastError.message.startsWith('INCOMPLETE_ANALYSIS')) {
-                 setError('Không thể hoàn tất phân tích sau nhiều lần thử. Vui lòng thử lại sau hoặc điều chỉnh lại các triệu chứng.');
+                 setError('Không thể hoàn tất phân tích sau nhiều lần thử. Các kết quả hiện tại có thể chưa đầy đủ.');
              } else if (lastError.message === 'MODEL_OVERLOADED') {
                  setError('Máy chủ AI hiện đang quá tải. Sau 5 lần thử vẫn không thành công, vui lòng thử lại sau ít phút.');
              } else {
                 setError(lastError.message);
+                // For critical errors (e.g., auth), clear the results to avoid showing incomplete/misleading data.
+                setAnalysisResult(null);
              }
-             setAnalysisResult(null);
         }
 
         setLoading(false);

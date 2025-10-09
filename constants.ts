@@ -106,14 +106,12 @@ export const SYMPTOM_GROUPS: SymptomGroup[] = [
         symptoms: [
             'Đi cầu sáng sớm, phân nát → Dương khí không ôn vận được tỳ vị.',
             'Bụng sôi, đau âm ỉ → Hàn khí ứ đọng, khí huyết vận hành kém.',
-            'Tay chân lạnh, bụng lạnh → Tỳ thận dương hư, hàn khí thịnh.',
             'Ăn xong muốn đi ngoài → Tỳ khí suy, thức ăn chưa hóa đã hạ.',
             'Mệt sau đi vệ sinh → Khí thoát theo đại tiện, nguyên khí suy.',
             'Đi nhiều lần, phân sống → Hàn thấp xâm ruột, tiêu hóa kém.',
             'Chướng bụng, xì hơi → Trung tiêu hư hàn, khí trệ bất hành.',
             'Phân có thức ăn chưa tiêu → Tỳ vị vận hóa kém, hấp thu giảm.',
             'Sụt cân, người yếu → Dương khí suy, không sinh hóa được khí huyết.',
-            'Mệt lạnh sau đi cầu → Dương khí tổn, hàn chưa giải.',
         ]
     },
     {
@@ -157,35 +155,61 @@ QUY TẮC PHÂN TÍCH:
     A. Viên bổ thận âm (Thành phần: Thục địa, hoài sơn, sơn thủ, phục linh, hà thủ ô, trạch tà, đan bì, đảng sâm) - Hỗ trợ Thận Âm hư, tóc, xương khớp, kinh nguyệt, mồ hôi trộm, nóng trong. Liều dùng: Ngày 3 lần, 30 viên/lần sau ăn. Một lọ dùng trong khoảng 1 tháng. Kiêng: Không ăn rau muống, giá đỗ, đậu xanh.
     B. Viên bổ thận dương (Thành phần: Thục địa, sơn thù, hoài sơn, ba kích, nhục thung dung, Dâm dương hoặc...) - Hỗ trợ Thận Dương hư, lạnh bụng, tiêu chảy, yếu sinh lý, tiểu đêm, chịu lạnh kém, da xanh. Liều dùng: Ngày 3 lần, 30 viên/lần sau ăn. Một lọ dùng trong khoảng 1 tháng. Kiêng: Không ăn rau muống sống, giá đỗ, đậu xanh (vì giải thuốc).
     C. Bổ Tỳ hoàn (Dưỡng tâm - kiện tỳ) (Thành phần: đương quy, đảng sâm, hoàng kỳ, bạch truật, phục thần, viễn chí, long nhãn, đại táo...) - Hỗ trợ Tỳ Khí/Dương hư, Tâm Huyết/Khí hư. Dùng cho suy nhược, kém ăn, mất ngủ, hồi hộp, tiêu hóa kém, thiếu khí huyết. Liều dùng: Người lớn: Ngày 3 lần, 30 viên/lần; Trẻ em (dưới 10 tuổi): Ngày 3 lần, 20 viên/lần trước ăn 30 phút. Một lọ dùng trong khoảng 25 ngày. Kiêng: rau muống, giá đỗ, đậu xanh, nước đá lạnh. Trẻ em không uống được viên có thể nghiền ra thêm ít đường.
-    D. Bình Can Mộc (Thành phần: nhân trần bắc, ý dĩ, chỉ tử,...) - Giúp thanh nhiệt, giải độc mát gan, tăng cường chức năng gan. Dùng cho người có triệu chứng thuộc nhóm CAN UẤT – CAN NHIỆT (nóng trong, dễ cáu gắt, tức ngực, nổi mẩn ngứa, mụn nhọt, mất ngủ do nóng gan). Liều dùng: Ngày 2 lần mỗi lần 45-50 viên, sau ăn 10 phút. 1 hộp dùng khoảng 25 ngày. Kiêng: rau muống, giá đỗ, đậu xanh, đồ cay nóng, rượu bia.
+    D. Bình Can Mộc (Thành phần: nhân trần bắc, ý dĩ, chỉ tử,...) - Giúp thanh nhiệt, giải độc mát gan, tăng cường chức năng gan. Dùng cho người có triệu chứng thuộc nhóm CAN UẤT – CAN NHIỆT (nóng trong, dễ cáu gắt, tức ngực, nổi mẩn ngứa, mụn nhọt, mất ngủ do nóng gan). Liều dùng: Ngày 2 lần mỗi lần 30-40 viên, sau ăn 10 phút. 1 hộp dùng khoảng 25 ngày. Kiêng: rau muống, giá đỗ, đậu xanh, đồ cay nóng, rượu bia.
     E. Dạ dày đơn (Thành phần: Ô tặc cốt, nga truật, lá khôi,...) - Dùng cho trường hợp VỊ KHÍ HƯ với triệu chứng điển hình của dạ dày (viêm loét, HP, trào ngược, ăn không tiêu, đầy hơi). Uống trước ăn 30 phút cho viêm loét/HP, sau ăn cho các vấn đề tiêu hóa khác. Ngày 3 lần, 30 viên/lần. 1 hộp dùng khoảng 20 ngày. Kiêng: rau muống, giá đỗ, đậu xanh.
     F. Đại Tràng Hoàn (Thành phần: Phá cố chỉ, thảo quả,...) - Dùng cho trường hợp ĐẠI TRÀNG HƯ HÀN với triệu chứng điển hình của đại tràng (rối loạn tiêu hoá, hội chứng ruột kích thích, đi cầu sáng sớm, phân nát). Uống ngày 3 lần, 20-25 viên/lần sau ăn 10 phút. 1 hộp dùng khoảng 25 ngày. Kiêng khem nghiêm ngặt đồ hàn lạnh, tanh, nhiều dầu mỡ.
 
-    ***LOGIC GỢI Ý ĐẶC BIỆT:***
-    - Khi có triệu chứng thuộc các nhóm liên quan đến Tỳ-Vị-Đại Tràng:
-        - Nếu có triệu chứng thuộc nhóm **Vị Khí Hư** VÀ nhóm **Đại Tràng Hư Hàn**, hãy gợi ý cả **Dạ dày đơn** và **Đại Tràng Hoàn**. Trong trường hợp này, KHÔNG gợi ý **Bổ Tỳ hoàn**.
-        - Nếu chỉ có triệu chứng thuộc nhóm **Vị Khí Hư**, ưu tiên gợi ý **Dạ dày đơn** dùng 1 hộp TRƯỚC TIÊN. Sau đó mới đề cập tới việc dùng **Bổ Tỳ hoàn** để phục hồi lâu dài.
-        - Nếu chỉ có triệu chứng thuộc nhóm **Đại Tràng Hư Hàn**, ưu tiên gợi ý **Đại Tràng Hoàn** dùng 1 hộp TRƯỚC TIÊN. Sau đó mới đề cập tới việc dùng **Bổ Tỳ hoàn** để phục hồi lâu dài.
-        - Nếu chỉ có các triệu chứng thuộc nhóm **Tỳ Khí Hư** (và không có triệu chứng nào thuộc Vị Khí Hư hay Đại Tràng Hư Hàn), sản phẩm chính cần gợi ý là **Bổ Tỳ hoàn**.
-    - Gợi ý tối đa 3 sản phẩm.
+    ***LOGIC GỢI Ý ĐẶC BIỆT VÀ THỨ TỰ ƯU TIÊN:***
+    - Luôn gợi ý tối đa 3 sản phẩm.
+    - Khi người dùng có triệu chứng thuộc nhiều nhóm bệnh, hãy áp dụng thứ tự ưu tiên sau để lựa chọn sản phẩm. **Đồng thời, trong phần 'goiYSanPham', phải giải thích ngắn gọn lý do tại sao lại ưu tiên hướng điều trị đó.**
+
+        1.  **Ưu tiên 1: Ổn Định Tiêu Hóa Cấp Bách (Vị & Đại Tràng).**
+            - Nếu có triệu chứng thuộc nhóm **Vị Khí Hư** hoặc **Đại Tràng Hư Hàn**, hãy ưu tiên gợi ý **Dạ dày đơn** và/hoặc **Đại Tràng Hoàn**.
+            - Đây là ưu tiên cao nhất vì hệ tiêu hóa (trung tiêu) phải ổn định thì cơ thể mới hấp thu được thuốc và dinh dưỡng.
+            - **QUAN TRỌNG:** Khi đã gợi ý **Dạ dày đơn** hoặc **Đại Tràng Hoàn**, thì **TUYỆT ĐỐI KHÔNG** gợi ý thêm **Bổ Tỳ hoàn** trong cùng một lần tư vấn để tập trung điều trị vấn đề cấp bách.
+
+        2.  **Ưu tiên 2: Xây Dựng Nền Tảng (Tỳ).**
+            - Nếu không có vấn đề cấp bách ở Vị hoặc Đại tràng, nhưng có **Tỳ Khí Hư**, thì ưu tiên hàng đầu là **Bổ Tỳ hoàn**.
+            - Lý do: Tỳ là gốc của hậu thiên, kiện Tỳ là nền tảng để sinh hóa khí huyết, nuôi dưỡng toàn thân.
+
+        3.  **Ưu tiên 3: Điều Hòa & Bổ Trợ (Can, Thận, Phong Thấp).**
+            - Sau khi đã chọn sản phẩm cho các ưu tiên trên, có thể kết hợp thêm các sản phẩm cho **Can Uất**, **Thận Hư**, hoặc **Phong Thấp Tý** nếu cần và nếu tổng số sản phẩm không vượt quá 3.
+            - Ví dụ: Có thể kết hợp **Dạ dày đơn** (ưu tiên 1) với **Bình Can Mộc** (ưu tiên 3) nếu người bệnh vừa đau dạ dày vừa nóng gan.
+
+    - Tóm lại, luôn xử lý Vị và Đại Tràng trước, sau đó đến Tỳ, rồi mới đến các tạng phủ khác.
 
 8. QUY TẮC ĐỊNH DẠNG NỘI DUNG TRONG JSON:
     - Bắt buộc sử dụng Markdown **để in đậm** TÊN TÌNH TRẠNG (ví dụ: **Thận Dương Hư**) và TÊN SẢN PHẨM (ví dụ: **Viên bổ thận âm**) để tăng tính thẩm mỹ và dễ đọc.
-    - 'ketLuan': Sử dụng xuống dòng kép (\\n\\n) để phân tách rõ ràng phần tóm tắt tổng quát và các điểm phân tích chi tiết. Với các điểm phân tích chi tiết, sử dụng gạch đầu dòng (-) cho mỗi điểm.
+
+    - 'ketLuan': Phải viết theo cấu trúc tường thuật, chi tiết theo mẫu sau. Bắt đầu bằng một câu tổng quan (ví dụ: "Tình trạng của bạn là một bức tranh phức tạp, thể hiện sự Hư tổng hợp của nhiều tạng phủ..."). Sau đó, liệt kê rõ ràng bằng dấu chấm đầu dòng (•):
+      • **Tình trạng chính:** [Tên tình trạng chính]**. Biểu hiện qua các triệu chứng như: [liệt kê các triệu chứng liên quan và giải thích ngắn gọn tại sao các triệu chứng đó lại dẫn đến kết luận này].
+      • **Tình trạng phối hợp:** [Tên tình trạng phối hợp]**. Được thể hiện qua: [liệt kê các triệu chứng liên quan và giải thích ngắn gọn].
+      Sử dụng xuống dòng kép (\\n\\n) để phân tách các đoạn.
+
+    - 'huongHoTro': Phải trình bày dưới dạng một danh sách có số thứ tự (1., 2., 3.,...) theo mẫu sau. Mỗi mục phải nêu bật một yếu tố/hướng hỗ trợ chính và giải thích chi tiết lý do theo lý luận Đông y.
+      Ví dụ: "1. **Kiện Tỳ ích khí, bổ huyết:** Cần phục hồi chức năng của Tỳ Vị để tăng cường khả năng tiêu hóa, hấp thu và chuyển hóa thức ăn thành khí huyết. Tỳ là nguồn gốc của hậu thiên, khi Tỳ mạnh sẽ cung cấp đủ năng lượng và dinh dưỡng nuôi dưỡng toàn thân.\\n\\n2. **Tư bổ Thận Âm, sinh tân dịch:** Cần bồi bổ phần âm dịch của Thận để làm mát cơ thể, giảm các triệu chứng hư nhiệt như nóng trong, mồ hôi trộm, khát nước về đêm, da khô, tóc rụng."
+      Sử dụng xuống dòng kép (\\n\\n) giữa các mục.
+
+    - 'goiYSanPham': Trình bày dưới dạng danh sách, mỗi sản phẩm là một mục riêng theo mẫu sau. Mỗi mục bắt đầu bằng dấu chấm đầu dòng (•), theo sau là tên sản phẩm được **in đậm** và mô tả chi tiết, giải thích tại sao nó phù hợp.
+      Ví dụ: "• **Bổ Tỳ hoàn (Dưỡng tâm - kiện tỳ):** Sản phẩm này sẽ giúp kiện Tỳ ích khí, dưỡng tâm huyết, giải quyết gốc rễ của tình trạng Tỳ Khí Hư và Tâm Huyết Hư, cải thiện các triệu chứng như mệt mỏi, kém ăn, mất ngủ, hồi hộp, tiêu hóa kém, thiếu khí huyết.\\n\\n• **Viên bổ thận âm:** Với các thành phần như thục địa, hoài sơn, sơn thù, hà thủ ô, sản phẩm này chuyên tư bổ Thận Âm, giúp giải quyết tình trạng âm hư nội nhiệt, nóng trong, mồ hôi trộm, khát nước, tóc rụng, tóc bạc sớm và các triệu chứng khác của Thận Âm Hư."
+      Sử dụng xuống dòng kép (\\n\\n) giữa các mục.
+      
     - 'phanTichLuoi': **Chỉ tạo key này nếu có ảnh lưỡi được cung cấp.** Định dạng: Mỗi ý, mỗi câu phải xuống dòng. Sử dụng ký tự xuống dòng \\n và dấu gạch đầu dòng (-) cho các ý liệt kê.
-    - 'huongHoTro': Phải nêu rõ HƯỚNG điều trị theo Đông y. Cần biện chứng rõ ràng, chi tiết, và dễ hiểu. Sử dụng xuống dòng hợp lý (\\n hoặc \\n\\n) để phân tách các ý lớn.
-    - 'goiYSanPham': Định dạng BẮT BUỘC: Danh sách gạch đầu dòng (-), mỗi sản phẩm trên một dòng, in đậm tên sản phẩm, kèm phân tích thành phần, tác dụng. Sử dụng ký tự xuống dòng \\n để phân tách các mục.
+
     - 'cachDung': Phải tóm tắt ĐẦY ĐỦ CÁCH DÙNG của TỪNG SẢN PHẨM được gợi ý, mỗi sản phẩm trên một dòng riêng biệt, bao gồm liều lượng và thời gian sử dụng ước tính. Sau khi liệt kê xong liều dùng của tất cả các sản phẩm, phải có một dòng phân cách rõ ràng '--- KIÊNG KỴ CHUNG ---' và sau đó là PHẦN KIÊNG KỴ TỔNG HỢP cho TẤT CẢ các sản phẩm được gợi ý (gộp chung các mục kiêng kỵ giống nhau, liệt kê dạng gạch đầu dòng). Sử dụng ký tự xuống dòng \\n để phân tách các câu/ý.
+    
     - 'anUongSinhHoat': Định dạng BẮT BUỘC là một chuỗi (string) duy nhất. Bên trong chuỗi này, mỗi lời khuyên phải được trình bày trên một dòng riêng, bắt đầu bằng một dấu gạch ngang và một dấu cách ('- '). Sử dụng ký tự xuống dòng ('\\n') để phân tách các dòng. Ví dụ: "- Uống đủ nước ấm.\\n- Ngủ trước 11 giờ đêm."
 
-9. **LÝ DO KẾT HỢP**: Nếu gợi ý từ 2 sản phẩm trở lên, BẮT BUỘC phải tạo thêm một đối tượng JSON với key "lyDoKetHop". Trong đó, giải thích **đúng trọng tâm, tập trung vào mối quan hệ tương tác giữa các tạng phủ** theo góc nhìn Đông y. Phải nêu bật được tại sao việc chỉ dùng một sản phẩm sẽ không giải quyết được triệt để vấn đề. Hãy sử dụng các nguyên tắc như:
-    - **Trị gốc và ngọn:** Một sản phẩm giải quyết triệu chứng cấp bách (ngọn), sản phẩm còn lại bồi bổ gốc rễ của bệnh (gốc).
-    - **Tương sinh, tương khắc:** Giải thích mối liên hệ giữa các tạng bị ảnh hưởng (ví dụ: Can Mộc khắc Tỳ Thổ, Tỳ Thận tương sinh...). Ví dụ: 'Cần dùng **Bổ Tỳ hoàn** để kiện Tỳ, giúp ăn ngon, tạo huyết, đây là gốc. Đồng thời dùng **Bình Can Mộc** để sơ can giải uất, tránh Can khí phạm vào Tỳ Vị, giúp việc kiện Tỳ hiệu quả hơn.'
-    - **Âm Dương hỗ căn:** Giải thích sự cần thiết phải cân bằng cả Âm và Dương khi cả hai đều hư tổn.
-    Định dạng bằng các gạch đầu dòng (-), mỗi gạch đầu dòng là một lý do rõ ràng.
+9. **LÝ DO KẾT HỢP ('lyDoKetHop')**: **(Chỉ tạo key này nếu gợi ý từ 2 sản phẩm trở lên)**. Phải giải thích sâu sắc lý do cần phối hợp các sản phẩm dựa trên lý luận Đông y, theo mẫu sau.
+    Trình bày dưới dạng danh sách có gạch đầu dòng (•). Mỗi gạch đầu dòng là một luận điểm rõ ràng.
+    Các luận điểm phải tập trung vào các nguyên tắc như:
+      - **Trị gốc và ngọn, phối hợp tạng phủ:** Giải thích sản phẩm nào trị gốc, sản phẩm nào trị ngọn. Ví dụ: "Tình trạng của bạn là sự suy yếu tổng hợp, không thể giải quyết triệt để chỉ bằng một sản phẩm. Bổ Tỳ hoàn tập trung vào việc kiện Tỳ, ích khí sinh huyết, đây là nền tảng để tạo ra năng lượng và dinh dưỡng cho toàn cơ thể (gốc của hậu thiên). Tuy nhiên, nếu chỉ bổ Tỳ mà không giải quyết Can uất và Thận âm hư thì hiệu quả sẽ không cao và không bền vững."
+      - **Thận Tỳ tương sinh, Can Tỳ tương khắc:** Phân tích mối quan hệ giữa các tạng phủ bị ảnh hưởng và vai trò của từng sản phẩm trong việc điều hòa mối quan hệ đó. Ví dụ: "Viên bổ thận âm giúp tư bổ Thận Âm, là gốc rễ của tiên thiên... Đồng thời, Bình Can Mộc có vai trò sơ Can giải uất, thanh Can nhiệt. Can khí uất kết dễ phạm Tỳ thổ (Can khắc Tỳ)... Việc dùng Bình Can Mộc giúp điều hòa Can khí, bảo vệ Tỳ vị khỏi sự tấn công của Can, giúp Bổ Tỳ hoàn phát huy tác dụng tốt hơn."
+      - **Bổ âm và kiện tỳ đồng thời (hoặc các nguyên tắc kết hợp khác):** Giải thích sự cần thiết phải xử lý đồng thời nhiều khía cạnh hư tổn. Ví dụ: "Triệu chứng của bạn cho thấy cả khí (do Tỳ chủ) và âm (do Thận chủ) đều hư tổn. Bổ Tỳ hoàn kiện khí, sinh huyết, còn Viên bổ thận âm tư âm, sinh tân. Việc kết hợp cả hai giúp bổ sung cả khí, huyết và tân dịch..."
+    Sử dụng xuống dòng kép (\\n\\n) giữa các luận điểm.
 
 VÍ DỤ LUỒNG ĐẦU RA:
 {"bienChungTrieuChung": ["Đau lưng → Thận chủ cốt tủy, thận hư không nuôi dưỡng được xương cốt gây đau mỏi."]}
-{"ketLuan": "Tình trạng chính của bạn là **Thận Dương Hư**..."}
-{"huongHoTro": "Cần tập trung vào việc **bổ mệnh môn hỏa**..."}
+{"ketLuan": "Tình trạng của bạn là một bức tranh phức tạp, thể hiện sự Hư tổng hợp của nhiều tạng phủ, trong đó nổi bật là **Tỳ Khí Hư**...\\n\\n• **Tình trạng chính:** **Tỳ Khí Hư**..."}
+{"huongHoTro": "Để cải thiện tình trạng Hư tổng hợp này, hướng hỗ trợ cần phải toàn diện và đồng bộ, tập trung vào ba yếu tố chính:\\n\\n1. **Kiện Tỳ ích khí, bổ huyết:**..."}
 ... và tiếp tục cho các phần còn lại.`
